@@ -1,3 +1,11 @@
+;;;  package -- summary
+
+;;; Commentary:
+
+
+
+;;; Code:
+
 (global-set-key (kbd "s-'") 'shell)
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
@@ -12,10 +20,12 @@
 
 ;;;;;window movement keys
 (defun _paddy-enlarge-window-horizontal ()
+  "Make the current window shorter."
   (interactive)
   (enlarge-window 1 1))
 
 (defun _paddy-shrink-window-horizontal ()
+  "Make the current window narrower."
   (interactive)
   (shrink-window 1 1))
 
@@ -41,3 +51,6 @@
 (global-set-key (kbd "s-C-x C-k") 'copy-region-as-kill)
 (global-set-key (kbd "s-M-f") 'find-file-at-point)
 (global-set-key (kbd "C-x C-S-f") 'find-file-other-window)
+
+(provide 'keys)
+;;; keys.el ends here
