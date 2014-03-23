@@ -42,7 +42,7 @@
 (global-set-key (kbd "s-o") 'other-window)
 
 
-(global-set-key (kbd "s-g") 'find-grep)
+(global-set-key (kbd "s-g") 'rgrep)
 (global-set-key (kbd "s-w") 'delete-window)
 (global-set-key (kbd "s-=") 'balance-windows)
 
