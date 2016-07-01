@@ -63,3 +63,4 @@
 (setq prelude-guru nil)
 (provide 'me)
 ;;; me.el ends here
+(add-hook 'prelude-prog-mode-hook (lambda () (smartparens-mode -1)) t)

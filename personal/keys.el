@@ -13,6 +13,9 @@
 (global-set-key (kbd "s-o") (lambda ()
                               (interactive)
                               (other-window -1))) ;; back one
+(global-set-key (kbd "C-M-o") (lambda ()
+                              (interactive)
+                              (other-window -1))) ;; back one
 
 (global-set-key (kbd "s-O") (lambda ()
                               (interactive)
