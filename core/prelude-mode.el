@@ -80,7 +80,7 @@
     (define-key map (kbd "s-m l") 'magit-log)
     (define-key map (kbd "s-m f") 'magit-file-log)
     (define-key map (kbd "s-m b") 'magit-blame-mode)
-    (define-key map (kbd "s-o") 'prelude-smart-open-line-above)
+    ;(define-key map (kbd "s-o") 'prelude-smart-open-line-above)
 
     map)
   "Keymap for Prelude mode.")
