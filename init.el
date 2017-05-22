@@ -110,6 +110,7 @@ by Prelude.")
 (require 'prelude-ui)
 (require 'prelude-core)
 (require 'prelude-mode)
+(require 'crux)
 (require 'prelude-editor)
 (require 'prelude-global-keybindings)
 
