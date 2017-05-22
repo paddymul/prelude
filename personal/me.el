@@ -57,10 +57,22 @@
       (command-execute 'prompt-for-shell-name)
     (shell)))
 
+(defun unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+
 (global-unset-key (kbd "s-'"))
 (global-set-key (kbd "s-;") 'new-shell)
+
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-c C-z"))
 ;(require 'prelude-editor)
 (setq prelude-guru nil)
 (provide 'me)
 ;;; me.el ends here
 (add-hook 'prelude-prog-mode-hook (lambda () (smartparens-mode -1)) t)
+(add-hook 'shell-mode-hook (lambda () (turn-off-show-smartparens-mode)) t)
