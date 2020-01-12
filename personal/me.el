@@ -57,6 +57,17 @@
       (command-execute 'prompt-for-shell-name)
     (shell)))
 
+(add-to-list 'display-buffer-alist
+             '("^\\*shell\\*$" . (display-buffer-same-window))
+
+             )
+(add-to-list 'display-buffer-alist
+             '(".*el$" . (display-buffer-same-window))
+             )
+(add-to-list 'display-buffer-alist
+             '("^\\*help\\*$" . (display-buffer-use-some-window)))
+
+
 (defun unfill-paragraph (&optional region)
   "Takes a multi-line paragraph and makes it into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))

@@ -72,7 +72,7 @@
   :group 'convenience
   :prefix "aw-")
 
-(defcustom aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
+(defcustom aw-keys '(?a ?s ?u ?i ?5 ?6 ?7 ?8 ?9)
   "Keys for selecting window."
   :type '(repeat character))
 
@@ -164,6 +164,8 @@ Consider changing this if the overlay tends to overlap with other things."
 ;; Must be defined before `aw-make-frame-char' since its :set function references this.
 (defvar aw-dispatch-alist
   '((?x aw-delete-window "Delete Window")
+    (?k aw-delete-window "Kill Window")
+    (?b balance-windows "Balance Window")
     (?m aw-swap-window "Swap Windows")
     (?M aw-move-window "Move Window")
     (?c aw-copy-window "Copy Window")
@@ -174,7 +176,7 @@ Consider changing this if the overlay tends to overlap with other things."
     (?e aw-execute-command-other-window "Execute Command Other Window")
     (?F aw-split-window-fair "Split Fair Window")
     (?v aw-split-window-vert "Split Vert Window")
-    (?b aw-split-window-horz "Split Horz Window")
+    (?h aw-split-window-horz "Split Horz Window")
     (?X delete-other-windows "Delete Other Windows")
     (?T aw-transpose-frame "Transpose Frame")
     (?? aw-show-dispatch-help))
@@ -183,6 +185,7 @@ Each action is a list of either:
   (char function description) where function takes a single window argument
 or
   (char function) where function takes no argument and the description is omitted.")
+
 
 (defun aw-set-make-frame-char (option value)
   ;; Signal an error if `aw-make-frame-char' is ever set to an invalid
@@ -521,7 +524,6 @@ The new frame is set to the same size as the previous frame, offset by
                        (aw-set-mode-line (format " Ace - %s" description)))
                    (if (commandp fn)
                        (progn
-                         (print  "is a function ")
                          (call-interactively fn))
                      (funcall fn))
                    (throw 'done 'exit)))

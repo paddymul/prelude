@@ -14,9 +14,13 @@
 (eval-after-load "prelude-mode"
   '(progn
      (define-key prelude-mode-map (kbd "s-o") nil)
-     (global-set-key (kbd "s-o") (lambda ()
-                                   (interactive)
-                                   (other-window -1))))) ;; back one
+     (define-key global-map (kbd "s-o") nil)
+     ;; (global-set-key (kbd "s-o") (lambda ()
+     ;;                               (interactive)
+     ;;                               (other-window -1)))
+     (global-set-key (kbd "s-o")   'ace-window)
+
+)) ;; back one
 
 
 (global-set-key (kbd "C-M-o") (lambda ()
