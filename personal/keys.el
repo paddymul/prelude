@@ -10,7 +10,6 @@
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
                               (delete-window))) ;; back one
-
 (eval-after-load "prelude-mode"
   '(progn
      (define-key prelude-mode-map (kbd "s-o") nil)

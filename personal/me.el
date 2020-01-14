@@ -6,6 +6,12 @@
 
 ;;; Code:
 
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+
 
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
@@ -121,14 +127,13 @@
 
 (setq prelude-guru nil)
 
+
 ; disable ido0mode for write file
 (define-key (cdr ido-minor-mode-map-entry) [remap write-file] nil)
 
 
 ;;; me.el ends here
-(add-hook 'prelude-prog-mode-hook (lambda () (smartparens-mode -1)) t)
-(add-hook 'shell-mode-hook (lambda () (turn-off-show-smartparens-mode)) t)
-(put 'shell 'ido 'ignore)
+(put 'smex 'shell 'ido 'ignore)
 (defadvice ido-read-buffer (around ido-read-buffer-possibly-ignore activate)
   "Check to see if use wanted to avoid using ido"
   (if (eq (get this-command 'ido) 'ignore)
@@ -137,8 +142,9 @@
         (setq ad-return-value (apply 'read-buffer (ad-get-args 0))))
     ad-do-it))
 
-(put 'smex 'ido 'ignore)
-
 
 
 (provide 'me)
+;;; me.el ends here
+(add-hook 'prelude-prog-mode-hook (lambda () (smartparens-mode -1)) t)
+(add-hook 'shell-mode-hook (lambda () (turn-off-show-smartparens-mode)) t)
