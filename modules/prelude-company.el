@@ -1,11 +1,9 @@
 ;;; prelude-company.el --- company-mode setup
 ;;
-;; Copyright © 2011-2017 Bozhidar Batsov
+;; Copyright © 2011-2021 Bozhidar Batsov
 ;;
 ;; Author: Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: https://github.com/bbatsov/prelude
-;; Version: 1.0.0
-;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
 
@@ -34,15 +32,19 @@
 (prelude-require-packages '(company))
 
 (require 'company)
+(require 'diminish)
 
 (setq company-idle-delay 0.5)
+(setq company-show-numbers t)
 (setq company-tooltip-limit 10)
 (setq company-minimum-prefix-length 2)
+(setq company-tooltip-align-annotations t)
 ;; invert the navigation direction if the the completion popup-isearch-match
 ;; is displayed on top (happens near the bottom of windows)
 (setq company-tooltip-flip-when-above t)
 
 (global-company-mode 1)
+(diminish 'company-mode)
 
 (provide 'prelude-company)
 ;;; prelude-company.el ends here

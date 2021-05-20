@@ -1,11 +1,9 @@
 ;;; prelude-ido.el --- Ido setup
 ;;
-;; Copyright © 2011-2017 Bozhidar Batsov
+;; Copyright © 2011-2021 Bozhidar Batsov
 ;;
 ;; Author: Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: https://github.com/bbatsov/prelude
-;; Version: 1.0.0
-;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
 
@@ -31,10 +29,10 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
-(prelude-require-packages '(flx-ido ido-ubiquitous smex))
+(prelude-require-packages '(flx-ido ido-completing-read+ smex))
 
 (require 'ido)
-(require 'ido-ubiquitous)
+(require 'ido-completing-read+)
 (require 'flx-ido)
 
 (setq ido-enable-prefix nil

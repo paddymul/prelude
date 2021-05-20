@@ -1,11 +1,9 @@
 ;;; prelude-editor.el --- Emacs Prelude: enhanced core editing experience.
 ;;
-;; Copyright © 2011-2017 Bozhidar Batsov
+;; Copyright © 2011-2021 Bozhidar Batsov
 ;;
 ;; Author: Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: https://github.com/bbatsov/prelude
-;; Version: 1.0.0
-;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
 
@@ -32,38 +30,6 @@
 
 ;;; Code:
 
-;; customize
-(defgroup prelude nil
-  "Emacs Prelude configuration."
-  :prefix "prelude-"
-  :group 'convenience)
-
-(defcustom prelude-auto-save t
-  "Non-nil values enable Prelude's auto save."
-  :type 'boolean
-  :group 'prelude)
-
-(defcustom prelude-guru t
-  "Non-nil values enable guru-mode."
-  :type 'boolean
-  :group 'prelude)
-
-(defcustom prelude-whitespace t
-  "Non-nil values enable Prelude's whitespace visualization."
-  :type 'boolean
-  :group 'prelude)
-
-(defcustom prelude-clean-whitespace-on-save t
-  "Cleanup whitespace from file before it's saved.
-Will only occur if prelude-whitespace is also enabled."
-  :type 'boolean
-  :group 'prelude)
-
-(defcustom prelude-flyspell t
-  "Non-nil values enable Prelude's flyspell support."
-  :type 'boolean
-  :group 'prelude)
-
 ;; Death to the tabs!  However, tabs historically indent to the next
 ;; 8-character offset; specifying anything else will cause *mass*
 ;; confusion, as it will change the appearance of every existing file.
@@ -76,6 +42,9 @@ Will only occur if prelude-whitespace is also enabled."
 ;; meaning) of any files you load.
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
 (setq-default tab-width 8)            ;; but maintain correct appearance
+
+;; Newline at end of file
+(setq require-final-newline t)
 
 ;; delete the selection with a keypress
 (delete-selection-mode t)
@@ -134,16 +103,13 @@ Will only occur if prelude-whitespace is also enabled."
 ;; saveplace remembers your location in a file when saving files
 (setq save-place-file (expand-file-name "saveplace" prelude-savefile-dir))
 ;; activate it for all buffers
-(if (< emacs-major-version 25)
-    (progn (require 'saveplace)
-           (setq-default save-place t))
-  (save-place-mode 1))
+(save-place-mode 1)
 
 ;; savehist keeps track of some history
 (require 'savehist)
 (setq savehist-additional-variables
       ;; search entries
-      '(search ring regexp-search-ring)
+      '(search-ring regexp-search-ring)
       ;; save every minute
       savehist-autosave-interval 60
       ;; keep the home clean
@@ -154,7 +120,20 @@ Will only occur if prelude-whitespace is also enabled."
 (require 'recentf)
 (setq recentf-save-file (expand-file-name "recentf" prelude-savefile-dir)
       recentf-max-saved-items 500
-      recentf-max-menu-items 15)
+      recentf-max-menu-items 15
+      ;; disable recentf-cleanup on Emacs start, because it can cause
+      ;; problems with remote files
+      recentf-auto-cleanup 'never)
+
+(defun prelude-recentf-exclude-p (file)
+  "A predicate to decide whether to exclude FILE from recentf."
+  (let ((file-dir (file-truename (file-name-directory file))))
+    (cl-some (lambda (dir)
+               (string-prefix-p dir file-dir))
+             (mapcar 'file-truename (list prelude-savefile-dir package-user-dir)))))
+
+(add-to-list 'recentf-exclude 'prelude-recentf-exclude-p)
+
 (recentf-mode +1)
 
 ;; use shift + arrow keys to switch between visible buffers
@@ -163,30 +142,19 @@ Will only occur if prelude-whitespace is also enabled."
 
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
-(defun prelude-auto-save-command ()
-  "Save the current buffer if `prelude-auto-save' is not nil."
-  (when (and prelude-auto-save
-             buffer-file-name
-             (buffer-modified-p (current-buffer))
-             (file-writable-p buffer-file-name))
-    (save-buffer)))
+(require 'super-save)
+;; add integration with ace-window
+(add-to-list 'super-save-triggers 'ace-window)
+(super-save-mode +1)
+(diminish 'super-save-mode)
 
-(defmacro advise-commands (advice-name commands &rest body)
-  "Apply advice named ADVICE-NAME to multiple COMMANDS.
-
-The body of the advice is in BODY."
-  `(progn
-     ,@(mapcar (lambda (command)
-                 `(defadvice ,command (before ,(intern (concat (symbol-name command) "-" advice-name)) activate)
-                    ,@body))
-               commands)))
-
-;; advise all window switching functions
-(advise-commands "auto-save"
-                 (switch-to-buffer other-window windmove-up windmove-down windmove-left windmove-right)
-                 (prelude-auto-save-command))
-
-(add-hook 'mouse-leave-buffer-hook 'prelude-auto-save-command)
+(defadvice set-buffer-major-mode (after set-major-mode activate compile)
+  "Set buffer major mode according to `auto-mode-alist'."
+  (let* ((name (buffer-name buffer))
+         (mode (assoc-default name auto-mode-alist 'string-match)))
+    (when (and mode (consp mode))
+      (setq mode (car mode)))
+    (with-current-buffer buffer (if mode (funcall mode)))))
 
 ;; highlight the current line
 (global-hl-line-mode +1)
@@ -254,18 +222,20 @@ The body of the advice is in BODY."
 ;; projectile is a project management mode
 (require 'projectile)
 (setq projectile-cache-file (expand-file-name  "projectile.cache" prelude-savefile-dir))
-(projectile-global-mode t)
+(projectile-mode t)
 
-;; anzu-mode enhances isearch by showing total matches and current match position
+;; avy allows us to effectively navigate to visible things
+(require 'avy)
+(setq avy-background t)
+(setq avy-style 'at-full)
+
+;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
 (require 'anzu)
 (diminish 'anzu-mode)
 (global-anzu-mode)
 
-;; shorter aliases for ack-and-a-half commands
-(defalias 'ack 'ack-and-a-half)
-(defalias 'ack-same 'ack-and-a-half-same)
-(defalias 'ack-find-file 'ack-and-a-half-find-file)
-(defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
+(global-set-key (kbd "M-%") 'anzu-query-replace)
+(global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)
@@ -293,46 +263,52 @@ The body of the advice is in BODY."
 (browse-kill-ring-default-keybindings)
 (global-set-key (kbd "s-y") 'browse-kill-ring)
 
+(defadvice exchange-point-and-mark (before deactivate-mark activate compile)
+  "When called with no active region, do not activate mark."
+  (interactive
+   (list (not (region-active-p)))))
+
+(require 'tabify)
+(defmacro with-region-or-buffer (func)
+  "When called with no active region, call FUNC on current buffer."
+  `(defadvice ,func (before with-region-or-buffer activate compile)
+     (interactive
+      (if mark-active
+          (list (region-beginning) (region-end))
+        (list (point-min) (point-max))))))
+
+(with-region-or-buffer indent-region)
+(with-region-or-buffer untabify)
+
 ;; automatically indenting yanked text if in programming-modes
-(defvar yank-indent-modes
-  '(LaTeX-mode TeX-mode)
-  "Modes in which to indent regions that are yanked (or yank-popped).
-Only modes that don't derive from `prog-mode' should be listed here.")
-
-(defvar yank-indent-blacklisted-modes
-  '(python-mode slim-mode haml-mode)
-  "Modes for which auto-indenting is suppressed.")
-
-(defvar yank-advised-indent-threshold 1000
-  "Threshold (# chars) over which indentation does not automatically occur.")
-
 (defun yank-advised-indent-function (beg end)
   "Do indentation, as long as the region isn't too large."
-  (if (<= (- end beg) yank-advised-indent-threshold)
+  (if (<= (- end beg) prelude-yank-indent-threshold)
       (indent-region beg end nil)))
 
-(defadvice yank (after yank-indent activate)
-  "If current mode is one of 'yank-indent-modes,
+(defmacro advise-commands (advice-name commands class &rest body)
+  "Apply advice named ADVICE-NAME to multiple COMMANDS.
+
+The body of the advice is in BODY."
+  `(progn
+     ,@(mapcar (lambda (command)
+                 `(defadvice ,command (,class ,(intern (concat (symbol-name command) "-" advice-name)) activate)
+                    ,@body))
+               commands)))
+
+(advise-commands "indent" (yank yank-pop) after
+  "If current mode is one of `prelude-yank-indent-modes',
 indent yanked text (with prefix arg don't indent)."
   (if (and (not (ad-get-arg 0))
-           (not (member major-mode yank-indent-blacklisted-modes))
+           (not (member major-mode prelude-indent-sensitive-modes))
            (or (derived-mode-p 'prog-mode)
-               (member major-mode yank-indent-modes)))
+               (member major-mode prelude-yank-indent-modes)))
       (let ((transient-mark-mode nil))
-    (yank-advised-indent-function (region-beginning) (region-end)))))
-
-(defadvice yank-pop (after yank-pop-indent activate)
-  "If current mode is one of `yank-indent-modes',
-indent yanked text (with prefix arg don't indent)."
-  (when (and (not (ad-get-arg 0))
-             (not (member major-mode yank-indent-blacklisted-modes))
-             (or (derived-mode-p 'prog-mode)
-                 (member major-mode yank-indent-modes)))
-    (let ((transient-mark-mode nil))
-      (yank-advised-indent-function (region-beginning) (region-end)))))
+        (yank-advised-indent-function (region-beginning) (region-end)))))
 
 ;; abbrev config
 (add-hook 'text-mode-hook 'abbrev-mode)
+(diminish 'abbrev-mode)
 
 ;; make a shell script executable automatically on save
 (add-hook 'after-save-hook
@@ -356,15 +332,43 @@ indent yanked text (with prefix arg don't indent)."
 (setq semanticdb-default-save-directory
       (expand-file-name "semanticdb" prelude-savefile-dir))
 
-;; enable Prelude's keybindings
-(prelude-global-mode t)
+;; Compilation from Emacs
+(defun prelude-colorize-compilation-buffer ()
+  "Colorize a compilation mode buffer."
+  (interactive)
+  ;; we don't want to mess with child modes such as grep-mode, ack, ag, etc
+  (when (eq major-mode 'compilation-mode)
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region (point-min) (point-max)))))
 
-;; sensible undo
+(require 'compile)
+(setq compilation-ask-about-save nil  ; Just save before compiling
+      compilation-always-kill t       ; Just kill old compile processes before
+                                        ; starting the new one
+      compilation-scroll-output 'first-error ; Automatically scroll to first
+                                        ; error
+      )
+
+;; Colorize output of Compilation Mode, see
+;; http://stackoverflow.com/a/3072831/355252
+(require 'ansi-color)
+(add-hook 'compilation-filter-hook #'prelude-colorize-compilation-buffer)
+
+;; enable Prelude's keybindings
+(prelude-mode t)
+
+;; supercharge your undo/redo with undo-tree
+(require 'undo-tree)
+;; autosave the undo-tree history
+(setq undo-tree-history-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq undo-tree-auto-save-history t)
 (global-undo-tree-mode)
 (diminish 'undo-tree-mode)
 
 ;; enable winner-mode to manage window configurations
 (winner-mode +1)
+
 ;; diff-hl
 (global-diff-hl-mode +1)
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
@@ -413,6 +417,7 @@ and file 'filename' will be opened and cursor set on line 'linenumber'"
 ;; use settings from .editorconfig file when present
 (require 'editorconfig)
 (editorconfig-mode 1)
+(diminish 'editorconfig-mode)
 
 (provide 'prelude-editor)
 

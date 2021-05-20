@@ -1,11 +1,9 @@
 ;;; prelude-programming.el --- Emacs Prelude: prog-mode configuration
 ;;
-;; Copyright © 2011-2017 Bozhidar Batsov
+;; Copyright © 2011-2021 Bozhidar Batsov
 ;;
 ;; Author: Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: https://github.com/bbatsov/prelude
-;; Version: 1.0.0
-;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
 
@@ -35,17 +33,13 @@
 (defun prelude-local-comment-auto-fill ()
   (set (make-local-variable 'comment-auto-fill-only-comments) t))
 
-(defun prelude-font-lock-comment-annotations ()
-  "Highlight a bunch of well known comment annotations.
-
-This functions should be added to the hooks of major modes for programming."
-  (font-lock-add-keywords
-   nil '(("\\<\\(\\(FIX\\(ME\\)?\\|TODO\\|OPTIMIZE\\|HACK\\|REFACTOR\\):\\)"
-          1 font-lock-warning-face t))))
-
 ;; show the name of the current function definition in the modeline
 (require 'which-func)
 (which-function-mode 1)
+
+;; font-lock annotations like TODO in source code
+(require 'hl-todo)
+(global-hl-todo-mode 1)
 
 ;; in Emacs 24 programming major modes generally derive from a common
 ;; mode named prog-mode; for others, we'll arrange for our mode
@@ -71,11 +65,11 @@ This functions should be added to the hooks of major modes for programming."
              prelude-flyspell)
     (flyspell-prog-mode))
   (when prelude-guru
-    (guru-mode +1))
+    (guru-mode +1)
+    (diminish 'guru-mode))
   (smartparens-mode +1)
   (prelude-enable-whitespace)
-  (prelude-local-comment-auto-fill)
-  (prelude-font-lock-comment-annotations))
+  (prelude-local-comment-auto-fill))
 
 (setq prelude-prog-mode-hook 'prelude-prog-mode-defaults)
 

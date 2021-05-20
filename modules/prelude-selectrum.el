@@ -1,17 +1,16 @@
-;;; prelude-mediawiki.el --- Emacs Prelude: mediawiki editing config
+;;; prelude-selectrum.el --- Selectrum setup
 ;;
-;; Copyright © 2011-2017 Bozhidar Batsov
+;; Copyright © 2011-2021 Bozhidar Batsov
 ;;
 ;; Author: Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: https://github.com/bbatsov/prelude
-;; Version: 1.0.0
-;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
 
 ;;; Commentary:
 
-;; Basic configs for access to WikEmacs and Wikipedia.
+;; Selectrum-related config.  Selectrum is a smart framework for minibuffer
+;; completion/filtering/selection (think of ivy/ido).
 
 ;;; License:
 
@@ -31,17 +30,25 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
+(prelude-require-packages '(selectrum selectrum-prescient))
 
-(prelude-require-packages '(mediawiki))
+;;; Selectrum
+;;
+;; selectrum is a powerful alternative to the popular ido-mode and ivy-mode.
 
-(eval-after-load 'mediawiki
-  '(progn
-     (setq mediawiki-site-alist '(("Wikipedia" "http://en.wikipedia.org/w" "" "" "Main Page")
-                                  ("WikEmacs" "http://wikemacs.org/w/" "" "" "Main Page")))
+(require 'selectrum)
+(require 'selectrum-prescient)
+(require 'diminish)
 
-     ;; Emacs users care more for WikEmacs than Wikipedia :-)
-     (setq mediawiki-site-default "WikEmacs")))
+(selectrum-mode 1)
+(diminish 'selectrum-mode)
 
-(provide 'prelude-mediawiki)
+;; to make sorting and filtering more intelligent
+(selectrum-prescient-mode +1)
 
-;;; prelude-mediawiki.el ends here
+;; to save your command history on disk, so the sorting gets more
+;; intelligent over time
+(prescient-persist-mode +1)
+
+(provide 'prelude-selectrum)
+;;; prelude-selectrum.el ends here
