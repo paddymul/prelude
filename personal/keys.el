@@ -5,11 +5,14 @@
 
 
 ;;; Code:
-
+(prin1 "keys.el")
 (global-set-key (kbd "s-'") 'shell)
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
                               (delete-window))) ;; back one
+
+
+;(global-unset-key (kbd "s-o"))
 (global-set-key (kbd "s-o") (lambda ()
                               (interactive)
                               (other-window -1))) ;; back one

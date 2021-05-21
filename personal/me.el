@@ -10,6 +10,10 @@
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
 
+
+
+(setq prelude-super-keybindings nil)
+
 (defun insert-line-number ()
   "Insert the current line number into the text."
   (interactive)
@@ -69,6 +73,12 @@
 (global-set-key (kbd "s-;") 'new-shell)
 
 (global-unset-key (kbd "C-z"))
+
+
+
+
+
+;(global-unset-key (kbd "s-o"))
 (global-unset-key (kbd "C-c C-z"))
 ;(require 'prelude-editor)
 

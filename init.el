@@ -51,6 +51,8 @@
 ;; Always load newest byte code
 (setq load-prefer-newer t)
 
+(setq prelude-super-keybindings nil)
+
 ;; Define Prelude's directory structure
 (defvar prelude-dir (file-name-directory load-file-name)
   "The root dir of the Emacs Prelude distribution.")
@@ -111,7 +113,7 @@ by Prelude.")
 (require 'prelude-ui)
 (require 'prelude-core)
 (require 'prelude-mode)
-(require 'crux)
+;(require 'crux)
 (require 'prelude-editor)
 (require 'prelude-global-keybindings)
 
