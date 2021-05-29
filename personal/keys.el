@@ -7,6 +7,9 @@
 ;;; Code:
 (prin1 "keys.el")
 (global-set-key (kbd "s-'") 'shell)
+(global-set-key (kbd "s-0") 'other-window-kill-window)
+(global-set-key (kbd "s-9") 'other-window-kill-buffer)q
+
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
                               (delete-window))) ;; back one
