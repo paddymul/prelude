@@ -6,7 +6,6 @@
 
 ;;; Code:
 
-
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
 
@@ -34,7 +33,8 @@
 
 (defun buffer-exists (buff-name)
   "Determine whether or not a buffer with BUFF-NAME exists."
-  (find buff-name (mapcar 'buffer-name (buffer-list)) :test 'equal))
+  (seq-position  (mapcar 'buffer-name (buffer-list))  buff-name))
+  ;(find buff-name (mapcar 'buffer-name (buffer-list)) :test 'equal))
 
 (defun shell-with-name (shell-name)
   "Rename current shell to temp, then open a new shell and name it SHELL-NAME."

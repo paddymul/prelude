@@ -36,7 +36,7 @@
 (which-key-mode)
 ;; (add-hook 'c-mode-hook 'lsp)
 ;; (add-hook 'c++-mode-hook 'lsp)
-;;(add-hook 'prog-mode-hook #'lsp)
+(add-hook 'prog-mode-hook #'lsp)
 ;; (add-hook 'python-mode
 ;;           (lambda ()
 ;;             (require 'lsp-python-ms)
@@ -75,17 +75,11 @@
       company-minimum-prefix-length 1
       lsp-idle-delay 0.1)  ;; clangd is fast
 
- (use-package lsp-mode
-   :hook
-   ((python-mode . lsp)) )
-
- (use-package lsp-ui
+(use-package lsp-mode
+  :hook
+  ((python-mode . lsp)) )
+(use-package lsp-ui
    :commands lsp-ui-mode)
-
-;; (require 'lsp-python-ms)
-
-;; (setq lsp-python-ms-auto-install-server t)
-;; (add-hook 'python-mode-hook #'lsp) ; or lsp-deferred
 
 
 (require 'use-package)
