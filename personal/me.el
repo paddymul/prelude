@@ -31,6 +31,86 @@
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 
+
+(setq display-buffer-fallback-action
+      '((  display-buffer-in-previous-window
+           display-buffer-reuse-window
+         
+           display-buffer-use-some-window
+           display-buffer--maybe-same-window  ;FIXME: why isn't this redundant?
+           display-buffer--maybe-pop-up-frame-or-window
+           ;; If all else fails, pop up a new frame.
+           display-buffer-pop-up-frame))
+
+      )
+
+
+
+;; (defun my-org-mode-hook ()
+;;   (let ((oldmap (cdr (assoc 'prelude-mode minor-mode-map-alist)))
+;;         (newmap (make-sparse-keymap)))
+;;     (set-keymap-parent newmap oldmap)
+;;     (define-key newmap (kbd "C-c +") nil)
+;;     (define-key newmap (kbd "C-c -") nil)
+;;     (make-local-variable 'minor-mode-overriding-map-alist)
+;;     (push `(prelude-mode . ,newmap) minor-mode-overriding-map-alist))
+;;   )
+
+
+;; (add-hook 'org-mode-hook 'my-org-mode-hook)
+
+
+(defun my-smerge-hook ()
+  (define-key smerge-mode-map (kbd "C-s n") 'smerge-next)
+
+  ;; (let ((oldmap (cdr (assoc 'smerge-mode minor-mode-map-alist)))
+  ;;       (newmap (make-sparse-keymap)))
+  ;;   (set-keymap-parent newmap oldmap)
+  ;;   (define-key newmap (kbd "C-s n") smerge-next)
+  ;;   ;(define-key newmap (kbd "C-s n") nil)
+  ;;   ;(define-key newmap (kbd "C-c -") nil)
+  ;;   (make-local-variable 'minor-mode-overriding-map-alist)
+  ;;   (push `(smerge-mode . ,newmap) minor-mode-overriding-map-alist))
+
+)
+
+(when window-system
+  (set-frame-position (selected-frame) 0 0)
+  (set-frame-size (selected-frame) 180 100))
+(add-hook 'smerge-mode-hook  'my-smerge-hook)
+
+
+
+
+;; `smerge-mode' Minor Mode Bindings:
+;; key             binding
+;; ---             -------
+
+;; C-c             Prefix Command
+
+;; C-c ^           Prefix Command
+
+;; C-c ^ RET       smerge-keep-current
+;; C-c ^ =         Prefix Command
+;; C-c ^ C         smerge-combine-with-next
+;; C-c ^ E         smerge-ediff
+;; C-c ^ R         smerge-refine
+;; C-c ^ a         smerge-keep-all
+;; C-c ^ b         smerge-keep-base
+;; C-c ^ l         smerge-keep-lower
+;; C-c ^ m         smerge-keep-upper
+;; C-c ^ n         smerge-next
+;; C-c ^ o         smerge-keep-lower
+;; C-c ^ p         smerge-prev
+;; C-c ^ r         smerge-resolve
+;; C-c ^ u         smerge-keep-upper
+
+;; C-c ^ = <       smerge-diff-base-upper
+;; C-c ^ = =       smerge-diff-upper-lower
+;; C-c ^ = >       smerge-diff-base-lower
+
+
+
 (defun buffer-exists (buff-name)
   "Determine whether or not a buffer with BUFF-NAME exists."
   (seq-position  (mapcar 'buffer-name (buffer-list))  buff-name))
