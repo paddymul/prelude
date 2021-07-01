@@ -39,6 +39,7 @@
   (shrink-window 1 1))
 
 (global-unset-key (kbd "M-`") )
+
 (global-set-key (kbd "s-P") 'enlarge-window)
 (global-set-key (kbd "s-p") 'windmove-up)
 (global-set-key (kbd "s-N") 'shrink-window)
@@ -51,7 +52,8 @@
 (global-set-key (kbd "s-o") 'other-window)
 
 
-(global-set-key (kbd "s-g") 'rgrep)
+(global-set-key (kbd "s-r") 'rgrep)
+(global-set-key (kbd "s-g") 'magit-status)
 (global-set-key (kbd "s-w") 'delete-window)
 (global-set-key (kbd "s-=") 'balance-windows)
 
