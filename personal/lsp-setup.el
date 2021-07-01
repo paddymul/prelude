@@ -93,3 +93,8 @@
   (require 'dap-cpptools)
   (require 'dap-chrome)
   (yas-global-mode))
+
+
+;setting company-idle-delay to 1.5 makes it much less likel that slow
+;company-mode completions will delay my typing
+(setq company-idle-delay 1.5)
