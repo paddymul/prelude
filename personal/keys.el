@@ -3,6 +3,12 @@
 ;;; Commentary:
 
 
+(print emacs-version)
+
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
+(setq prelude-super-keybindings nil)
+
 
 ;;; Code:
 (prin1 "keys.el")

@@ -6,12 +6,6 @@
 
 ;;; Code:
 
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier 'super)
-
-
-
-(setq prelude-super-keybindings nil)
 
 (defun insert-line-number ()
   "Insert the current line number into the text."
