@@ -80,10 +80,9 @@
 
 ;; (add-hook 'c-mode-hook 'lsp)
 ;; (add-hook 'c++-mode-hook 'lsp)
-;; (add-hook 'typescript-mode 'lsp)
 ;; (add-hook 'javascript-mode 'lsp)
 
-                                        ;(add-hook 'prog-mode-hook #'lsp)
+                                        
 ;; (add-hook 'python-mode
 ;;           (lambda ()
 ;;             (require 'lsp-python-ms)
@@ -118,6 +117,36 @@
   (setq lsp-keymap-prefix (kbd "M-l"))
  )
 
+(defmacro comment (&rest a))
+;(comment
+(lsp-defun lsp--server-register-capability ((&Registration :method :id :register-options?))
+  "Register capability REG."
+  (debug)
+  (when (and lsp-enable-file-watchers
+             (equal method "workspace/didChangeWatchedFiles"))
+    (-let* ((created-watches (lsp-session-watches (lsp-session)))
+            (root-folders (cl-set-difference
+                           (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session))
+                           (ht-keys created-watches))))
+      ;; create watch for each root folder without such
+      (dolist (folder root-folders)
+        (let* ((watch (make-lsp-watch :root-directory folder))
+               (ignored-things (lsp--get-ignored-regexes-for-workspace-root folder))
+               (ignored-files-regex-list (car ignored-things))
+               (ignored-directories-regex-list (cadr ignored-things)))
+          (puthash folder watch created-watches)
+          (lsp-watch-root-folder (file-truename folder)
+                                 (-partial #'lsp--file-process-event (lsp-session) folder)
+                                 ignored-files-regex-list
+                                 ignored-directories-regex-list
+                                 watch
+                                 t)))))
+
+  (push
+   (make-lsp--registered-capability :id id :method method :options register-options?)
+   (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))
+;)
+
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :commands lsp-ui-mode
@@ -150,8 +179,9 @@
   (setq js2-mode-show-strict-warnings nil)
 
   ;; Set up proper indentation in JavaScript and JSON files
-  (add-hook 'js2-mode-hook #'dw/set-js-indentation)
-  (add-hook 'json-mode-hook #'dw/set-js-indentation))
+  ;(add-hook 'js2-mode-hook #'dw/set-js-indentation)
+                                        ;(add-hook 'json-mode-hook #'dw/set-js-indentation)
+  )
 
 
 ;; (use-package apheleia
