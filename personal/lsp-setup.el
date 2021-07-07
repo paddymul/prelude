@@ -45,7 +45,7 @@
   ((python-mode . lsp))
   ((typescript-mode js2-mode web-mode) . lsp)
   :init
-  (setq lsp-keymap-prefix (kbd "M-l"))
+  (setq lsp-keymap-prefix "s-l")
   )
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
